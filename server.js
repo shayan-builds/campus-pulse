@@ -1,11 +1,7 @@
-require('dotenv').config({ quiet: true });
-
 const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-const pool = require('./db');
-const { runMigrations } = require('./scripts/migrate');
 
 const PORT = Number(process.env.PORT || 3000);
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -13,33 +9,40 @@ const SESSION_COOKIE = 'campuspulseSession';
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 const BCRYPT_ROUNDS = 12;
 const app = express();
-
-function validateEnvironment() {
-  const missing = ['DATABASE_URL', 'SESSION_SECRET'].filter((key) => !process.env[key]?.trim());
-  if (missing.length) {
-    throw new Error(`Missing required environment variable${missing.length > 1 ? 's' : ''}: ${missing.join(', ')}. Set them in .env for local development or in your deployment environment.`);
+const users = [];
+const sessions = new Map();
+let events = [
+  {
+    id: 'evt-001', title: 'Creative Coding Workshop', organizer: 'Campus Makers Club', category: 'Workshop',
+    date: '2026-10-08', time: '15:00', venue: 'Innovation Lab, Room 204',
+    link: 'https://example.com/register/creative-coding', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4'
+  },
+  {
+    id: 'evt-002', title: 'Autumn Lights Festival', organizer: 'Student Activities Council', category: 'Fest',
+    date: '2026-10-16', time: '18:30', venue: 'Central Quad',
+    link: 'https://example.com/register/autumn-lights', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87'
+  },
+  {
+    id: 'evt-003', title: 'Campus Startup Challenge', organizer: 'Entrepreneurship Society', category: 'Competition',
+    date: '2026-10-22', time: '10:00', venue: 'Business School Auditorium',
+    link: 'https://example.com/register/startup-challenge', image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d'
+  },
+  {
+    id: 'evt-004', title: 'Tensor Trails', organizer: 'IEEE Computer Society', category: 'Workshop',
+    date: '2026-10-05', time: '11:00 AM', venue: 'AIML Seminar Hall', link: '#',
+    description: 'A workshop focused on math and logic building.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904'
+  },
+  {
+    id: 'evt-005', title: 'WEB:RECON', organizer: 'IEEE WIE', category: 'Competition',
+    date: '2026-09-25', time: '2:00 PM', venue: 'AIML Seminar Hall', link: '#',
+    description: 'A web development coding competition.', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4'
+  },
+  {
+    id: 'evt-006', title: 'Pragati', organizer: 'BMSCE Dance Club', category: 'Fest',
+    date: '2026-10-20', time: '9:00 AM', venue: 'Main Auditorium', link: '#',
+    description: 'A dance event.', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad'
   }
-  if (Buffer.byteLength(process.env.SESSION_SECRET, 'utf8') < 32) {
-    throw new Error('SESSION_SECRET must be at least 32 bytes. Generate one with: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"');
-  }
-  if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
-    throw new Error('PORT must be a valid TCP port between 1 and 65535.');
-  }
-}
-
-function hashToken(token) {
-  return crypto.createHash('sha256').update(token).digest('hex');
-}
-
-function signToken(token) {
-  return crypto.createHmac('sha256', process.env.SESSION_SECRET).update(token).digest('hex');
-}
-
-function safeEqual(left, right) {
-  const leftBuffer = Buffer.from(left);
-  const rightBuffer = Buffer.from(right);
-  return leftBuffer.length === rightBuffer.length && crypto.timingSafeEqual(leftBuffer, rightBuffer);
-}
+];
 
 function readCookie(req, name) {
   const prefix = `${name}=`;
@@ -63,7 +66,7 @@ function cookieOptions() {
 }
 
 function setSessionCookie(res, token) {
-  res.cookie(SESSION_COOKIE, `${token}.${signToken(token)}`, cookieOptions());
+  res.cookie(SESSION_COOKIE, token, cookieOptions());
 }
 
 function clearSessionCookie(res) {
@@ -75,48 +78,33 @@ function clearSessionCookie(res) {
   });
 }
 
-async function findSessionUser(req) {
-  const cookieValue = readCookie(req, SESSION_COOKIE);
-  const separator = cookieValue.lastIndexOf('.');
-  if (separator < 1) return null;
-  const token = cookieValue.slice(0, separator);
-  const signature = cookieValue.slice(separator + 1);
-  if (!/^[a-f0-9]{64}$/.test(token) || !safeEqual(signature, signToken(token))) return null;
-
-  const result = await pool.query(
-    `SELECT users.id, users.name, users.email
-       FROM sessions
-       JOIN users ON users.id = sessions.user_id
-      WHERE sessions.token_hash = $1 AND sessions.expires_at > now()`,
-    [hashToken(token)]
-  );
-  return result.rows[0] || null;
+function findSessionUser(req) {
+  const token = readCookie(req, SESSION_COOKIE);
+  const session = sessions.get(token);
+  if (!session) return null;
+  if (session.expiresAt <= Date.now()) {
+    sessions.delete(token);
+    return null;
+  }
+  return users.find((user) => user.id === session.userId) || null;
 }
 
-async function requireApiAuth(req, res, next) {
-  try {
-    req.user = await findSessionUser(req);
-    if (!req.user) {
-      clearSessionCookie(res);
-      return res.status(401).json({ error: 'Invalid or expired session' });
-    }
-    return next();
-  } catch (error) {
-    return next(error);
+function requireApiAuth(req, res, next) {
+  req.user = findSessionUser(req);
+  if (!req.user) {
+    clearSessionCookie(res);
+    return res.status(401).json({ error: 'Invalid or expired session' });
   }
+  return next();
 }
 
-async function requirePageAuth(req, res, next) {
-  try {
-    req.user = await findSessionUser(req);
-    if (!req.user) {
-      clearSessionCookie(res);
-      return res.redirect(302, '/login.html');
-    }
-    return next();
-  } catch (error) {
-    return next(error);
+function requirePageAuth(req, res, next) {
+  req.user = findSessionUser(req);
+  if (!req.user) {
+    clearSessionCookie(res);
+    return res.redirect(302, '/login.html');
   }
+  return next();
 }
 
 function validateEmail(value) {
@@ -168,21 +156,6 @@ function normalizeEvent(body) {
   return event;
 }
 
-function eventResponse(row) {
-  return {
-    id: row.id,
-    title: row.title,
-    organizer: row.organizer,
-    category: row.category,
-    date: row.date,
-    time: row.time,
-    venue: row.venue,
-    link: row.link,
-    image: row.image,
-    ...(row.description ? { description: row.description } : {})
-  };
-}
-
 app.disable('x-powered-by');
 app.use((req, res, next) => {
   res.set('X-Content-Type-Options', 'nosniff');
@@ -192,14 +165,7 @@ app.use((req, res, next) => {
 });
 app.use(express.json({ limit: '32kb', strict: true }));
 
-app.get('/health', async (req, res) => {
-  try {
-    await pool.query('SELECT 1');
-    return res.json({ status: 'ok' });
-  } catch {
-    return res.status(503).json({ status: 'unavailable' });
-  }
-});
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.post('/signup', async (req, res) => {
   const name = typeof req.body?.name === 'string' ? req.body.name.trim() : '';
@@ -210,17 +176,17 @@ app.post('/signup', async (req, res) => {
     return res.status(400).json({ error: 'Enter a name, valid email, and password between 8 and 72 bytes' });
   }
 
-  const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-  try {
-    const result = await pool.query(
-      'INSERT INTO users (id, name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING name, email',
-      [crypto.randomUUID(), name, email, passwordHash]
-    );
-    return res.status(201).json({ message: 'Account created', user: result.rows[0] });
-  } catch (error) {
-    if (error.code === '23505') return res.status(409).json({ error: 'An account with that email already exists' });
-    throw error;
+  if (users.some((user) => user.email === email)) {
+    return res.status(409).json({ error: 'An account with that email already exists' });
   }
+  const user = {
+    id: crypto.randomUUID(),
+    name,
+    email,
+    passwordHash: await bcrypt.hash(password, BCRYPT_ROUNDS)
+  };
+  users.push(user);
+  return res.status(201).json({ message: 'Account created', user: { name: user.name, email: user.email } });
 });
 
 app.post('/login', async (req, res) => {
@@ -229,78 +195,44 @@ app.post('/login', async (req, res) => {
   if (!validateEmail(email) || typeof password !== 'string' || Buffer.byteLength(password, 'utf8') > 72) {
     return res.status(400).json({ error: 'Enter a valid email and password' });
   }
-  const result = await pool.query('SELECT id, name, email, password_hash FROM users WHERE email = $1', [email]);
-  const user = result.rows[0];
+  const user = users.find((item) => item.email === email);
   if (!user) return res.status(401).json({ error: 'Email or password is incorrect' });
 
-  let passwordMatches = false;
-  if (/^\$2[aby]\$/.test(user.password_hash)) {
-    passwordMatches = await bcrypt.compare(password, user.password_hash);
-  } else if (/^[a-f0-9]{64}$/i.test(user.password_hash)) {
-    const legacyHash = Buffer.from(user.password_hash, 'hex');
-    const candidateHash = crypto.createHash('sha256').update(password).digest();
-    passwordMatches = legacyHash.length === candidateHash.length && crypto.timingSafeEqual(legacyHash, candidateHash);
-    if (passwordMatches) {
-      const upgradedHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [upgradedHash, user.id]);
-    }
+  if (!await bcrypt.compare(password, user.passwordHash)) {
+    return res.status(401).json({ error: 'Email or password is incorrect' });
   }
-  if (!passwordMatches) return res.status(401).json({ error: 'Email or password is incorrect' });
 
-  await pool.query('DELETE FROM sessions WHERE expires_at <= now()');
+  for (const [token, session] of sessions) {
+    if (session.expiresAt <= Date.now()) sessions.delete(token);
+  }
   const token = crypto.randomBytes(32).toString('hex');
-  const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
-  await pool.query(
-    'INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, $3)',
-    [hashToken(token), user.id, expiresAt]
-  );
+  sessions.set(token, { userId: user.id, expiresAt: Date.now() + SESSION_DURATION_MS });
   setSessionCookie(res, token);
   return res.json({ user: { name: user.name, email: user.email } });
 });
 
 app.get('/me', requireApiAuth, (req, res) => res.json({ name: req.user.name, email: req.user.email }));
 
-app.post('/logout', async (req, res, next) => {
-  try {
-    const cookieValue = readCookie(req, SESSION_COOKIE);
-    const separator = cookieValue.lastIndexOf('.');
-    if (separator > 0) {
-      const token = cookieValue.slice(0, separator);
-      const signature = cookieValue.slice(separator + 1);
-      if (/^[a-f0-9]{64}$/.test(token) && safeEqual(signature, signToken(token))) {
-        await pool.query('DELETE FROM sessions WHERE token_hash = $1', [hashToken(token)]);
-      }
-    }
-    clearSessionCookie(res);
-    return res.json({ message: 'Logged out' });
-  } catch (error) {
-    return next(error);
-  }
+app.post('/logout', (req, res) => {
+  sessions.delete(readCookie(req, SESSION_COOKIE));
+  clearSessionCookie(res);
+  return res.json({ message: 'Logged out' });
 });
 
-app.get('/events', async (req, res) => {
-  const result = await pool.query(
-    `SELECT id, title, organizer, category, to_char(event_date, 'YYYY-MM-DD') AS date, time, venue, link, image, description
-       FROM events ORDER BY created_at, id`
-  );
-  return res.json(result.rows.map(eventResponse));
-});
+app.get('/events', (req, res) => res.json(events));
 
-app.post('/events', requireApiAuth, async (req, res) => {
+app.post('/events', requireApiAuth, (req, res) => {
   const event = normalizeEvent(req.body);
   if (!event) return res.status(400).json({ error: 'Enter valid event details for every required field' });
-  const result = await pool.query(
-    `INSERT INTO events (id, title, organizer, category, event_date, time, venue, link, image, description)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-     RETURNING id, title, organizer, category, to_char(event_date, 'YYYY-MM-DD') AS date, time, venue, link, image, description`,
-    [crypto.randomUUID(), event.title, event.organizer, event.category, event.date, event.time, event.venue, event.link, event.image, event.description]
-  );
-  return res.status(201).json(eventResponse(result.rows[0]));
+  const createdEvent = { id: crypto.randomUUID(), ...event };
+  events.push(createdEvent);
+  return res.status(201).json(createdEvent);
 });
 
-app.delete('/events/:id', requireApiAuth, async (req, res) => {
-  const result = await pool.query('DELETE FROM events WHERE id = $1 RETURNING id', [req.params.id]);
-  if (!result.rowCount) return res.status(404).json({ error: 'Event not found' });
+app.delete('/events/:id', requireApiAuth, (req, res) => {
+  const originalLength = events.length;
+  events = events.filter((event) => event.id !== req.params.id);
+  if (events.length === originalLength) return res.status(404).json({ error: 'Event not found' });
   return res.json({ message: 'Event deleted' });
 });
 
@@ -310,7 +242,6 @@ app.use(express.static(PUBLIC_DIR, { index: false, fallthrough: true }));
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use((error, req, res, next) => {
   if (res.headersSent) return next(error);
-  if (error.code === '23505') return res.status(409).json({ error: 'A record with that value already exists' });
   if (error.type === 'entity.parse.failed' || error.status === 400) {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
@@ -319,13 +250,12 @@ app.use((error, req, res, next) => {
   return res.status(500).json({ error: 'Internal server error' });
 });
 
-async function start() {
-  validateEnvironment();
-  await pool.query('SELECT 1');
-  await runMigrations(pool);
+function start() {
   const sessionCleanupTimer = setInterval(() => {
-    pool.query('DELETE FROM sessions WHERE expires_at <= now()')
-      .catch((error) => console.error('Session cleanup failed:', error.message));
+    const now = Date.now();
+    for (const [token, session] of sessions) {
+      if (session.expiresAt <= now) sessions.delete(token);
+    }
   }, 60 * 60 * 1000);
   sessionCleanupTimer.unref();
   const server = app.listen(PORT, () => {
@@ -338,14 +268,12 @@ async function start() {
       console.error('Unable to start CampusPulse server:', error.message);
     }
     process.exitCode = 1;
-    pool.end().finally(() => process.exit());
   });
 
   for (const signal of ['SIGINT', 'SIGTERM']) {
     process.once(signal, () => {
       server.close(async () => {
         clearInterval(sessionCleanupTimer);
-        await pool.end();
         console.log('CampusPulse server stopped.');
         process.exit(0);
       });
@@ -353,8 +281,4 @@ async function start() {
   }
 }
 
-start().catch(async (error) => {
-  console.error(`CampusPulse could not start: ${error.message}`);
-  await pool.end();
-  process.exitCode = 1;
-});
+start();
