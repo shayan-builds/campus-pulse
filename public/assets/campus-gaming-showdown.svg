@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-label="Neon-lit campus esports tournament with students at gaming PCs">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#11162d"/><stop offset="1" stop-color="#251337"/></linearGradient>
+    <linearGradient id="screen"><stop stop-color="#16d9e5"/><stop offset="1" stop-color="#8a46ff"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#f53dca" stop-opacity=".5"/><stop offset="1" stop-color="#f53dca" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/><ellipse cx="875" cy="290" rx="450" ry="300" fill="url(#glow)"/>
+  <path d="M0 120 370 0h110L0 340zm1200 20L875 0h-90l415 340z" fill="#5631a0" opacity=".28"/>
+  <path d="M0 550h1200v210H0z" fill="#11101a"/><path d="M75 571h1050" stroke="#18d7df" stroke-opacity=".55" stroke-width="4"/>
+  <g fill="#171d34" stroke="#27dbe8" stroke-width="8"><rect x="110" y="240" width="280" height="188" rx="12"/><rect x="460" y="190" width="310" height="225" rx="12"/><rect x="840" y="240" width="250" height="188" rx="12"/></g>
+  <g fill="url(#screen)"><path d="M132 262h236v142H132z"/><path d="M484 212h262v177H484z"/><path d="M860 262h210v142H860z"/></g>
+  <g fill="#152039" opacity=".9"><path d="m155 365 50-67 38 42 47-62 58 87z"/><path d="m510 355 57-77 55 50 36-81 72 108z"/><path d="m885 367 45-55 38 34 31-58 54 79z"/></g>
+  <g fill="#0c101d"><path d="M220 424h60v85h-60zM552 411h76v94h-76zM929 424h60v85h-60z"/><path d="M135 510h220l25 35H110zm325-12h310l26 36H435zm380 12h210l22 35H820z"/></g>
+  <g fill="#d451ba"><circle cx="253" cy="180" r="43"/><circle cx="610" cy="126" r="50"/><circle cx="966" cy="181" r="42"/></g>
+  <g fill="#11101a"><path d="M192 231q60-65 122 0l32 166H159z"/><path d="M535 184q75-82 150 0l34 209H501z"/><path d="M911 231q57-65 114 0l30 166H881z"/></g>
+  <g stroke="#7f55ff" stroke-width="10" fill="none"><path d="M205 532h160M515 527h190M846 532h160"/><path d="M520 607h160m-120 32h80"/></g>
+  <path d="M0 690h1200" stroke="#f04bc5" stroke-opacity=".5" stroke-width="3"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-label="Colorful campus cultural festival with traditional dancers and decorative lights">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#301a48"/><stop offset=".6" stop-color="#9c385d"/><stop offset="1" stop-color="#28172b"/></linearGradient>
+    <radialGradient id="stage"><stop stop-color="#ffc35f" stop-opacity=".9"/><stop offset="1" stop-color="#ff7866" stop-opacity="0"/></radialGradient>
+    <linearGradient id="cloth" x2="0" y2="1"><stop stop-color="#ffd45e"/><stop offset="1" stop-color="#e64f72"/></linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/><ellipse cx="600" cy="325" rx="510" ry="390" fill="url(#stage)"/>
+  <path d="M0 0h1200v90H0z" fill="#271638"/><path d="M0 90q300 110 600 0t600 0" fill="none" stroke="#ffcf64" stroke-width="8"/>
+  <g fill="#ffe17c"><circle cx="90" cy="100" r="12"/><circle cx="190" cy="120" r="10"/><circle cx="300" cy="132" r="12"/><circle cx="420" cy="134" r="10"/><circle cx="540" cy="122" r="12"/><circle cx="660" cy="122" r="12"/><circle cx="780" cy="134" r="10"/><circle cx="900" cy="132" r="12"/><circle cx="1010" cy="120" r="10"/><circle cx="1110" cy="100" r="12"/></g>
+  <path d="M0 638h1200v122H0z" fill="#191421"/><path d="M0 626h1200" stroke="#ffc65a" stroke-width="5"/>
+  <g fill="#161221"><circle cx="328" cy="345" r="50"/><path d="M278 400q50-35 100 0l25 60-53 32 52 117H242l52-117-51-32z"/><path d="M278 450 190 394m180 55 83-74M301 605l-72 67m131-67 67 64" stroke="#161221" stroke-width="25" stroke-linecap="round"/>
+    <circle cx="590" cy="320" r="54"/><path d="M540 378q50-36 100 0l35 72-85 44-85-44z"/><path d="m520 414-90-45m232 43 94-50M560 485l-64 119m121-119 66 119" stroke="#161221" stroke-width="26" stroke-linecap="round"/>
+    <circle cx="860" cy="350" r="48"/><path d="M811 400q49-34 98 0l34 62-83 42-83-42z"/><path d="m810 437-82-57m180 58 84-55M838 497l-55 112m108-112 61 112" stroke="#161221" stroke-width="24" stroke-linecap="round"/></g>
+  <g fill="url(#cloth)"><path d="m294 436 68 4 48 169H246z"/><path d="m543 411 94 0 42 57-86 48-86-48z"/><path d="m828 430 65 5 54 170H778z"/></g>
+  <g fill="none" stroke="#f7d57b" stroke-width="5"><path d="M144 245q54-88 108 0m-80 0q40-60 80 0"/><path d="M934 236q54-88 108 0m-80 0q40-60 80 0"/></g>
+  <path d="M85 640h1030" stroke="#d45086" stroke-width="3" opacity=".65"/>
+</svg>

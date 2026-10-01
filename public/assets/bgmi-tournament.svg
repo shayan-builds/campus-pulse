@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-label="Mobile esports tournament with students playing on phones in a dramatic arena">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#101b2c"/><stop offset=".55" stop-color="#294252"/><stop offset="1" stop-color="#141722"/></linearGradient>
+    <radialGradient id="sun"><stop stop-color="#ffbd59" stop-opacity=".92"/><stop offset="1" stop-color="#ff654e" stop-opacity="0"/></radialGradient>
+    <linearGradient id="phone" x2="1" y2="1"><stop stop-color="#36ead1"/><stop offset="1" stop-color="#2874a2"/></linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/><ellipse cx="850" cy="300" rx="460" ry="300" fill="url(#sun)"/>
+  <path d="M0 454 130 354l94 69 132-166 143 196 139-132 98 96 137-182 128 184 112-96 87 88v349H0z" fill="#192235" opacity=".82"/>
+  <path d="M0 535q180-70 350 8t350-4 500-18v239H0z" fill="#0b101b"/>
+  <path d="M0 570h1200" stroke="#ffb753" stroke-opacity=".62" stroke-width="5"/>
+  <g fill="#f7b85e" opacity=".75"><circle cx="105" cy="145" r="5"/><circle cx="260" cy="230" r="4"/><circle cx="440" cy="120" r="5"/><circle cx="1060" cy="128" r="5"/><circle cx="1150" cy="275" r="4"/></g>
+  <g fill="#101521"><circle cx="270" cy="486" r="50"/><path d="M184 554q87-105 174 0l51 151H135z"/><circle cx="595" cy="454" r="58"/><path d="M487 541q108-122 216 0l55 164H432z"/><circle cx="930" cy="487" r="49"/><path d="M848 552q82-100 164 0l48 150H800z"/></g>
+  <g fill="#151b2c" stroke="#d4edf1" stroke-width="6"><rect x="219" y="557" width="42" height="72" rx="10" transform="rotate(-14 219 557)"/><rect x="572" y="542" width="48" height="84" rx="11" transform="rotate(8 572 542)"/><rect x="920" y="564" width="42" height="72" rx="10" transform="rotate(-9 920 564)"/></g>
+  <g fill="url(#phone)"><rect x="225" y="568" width="28" height="48" rx="5" transform="rotate(-14 225 568)"/><rect x="581" y="553" width="30" height="56" rx="5" transform="rotate(8 581 553)"/><rect x="926" y="574" width="28" height="48" rx="5" transform="rotate(-9 926 574)"/></g>
+  <path d="M450 706h303" stroke="#33e0d3" stroke-width="5"/><path d="M504 730h194" stroke="#ffb753" stroke-width="3"/>
+</svg>

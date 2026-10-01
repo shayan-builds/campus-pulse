@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-label="College band performing live under dramatic stage lights with guitars, drums, and a cheering crowd">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#17142c"/><stop offset=".56" stop-color="#412044"/><stop offset="1" stop-color="#14121d"/></linearGradient>
+    <radialGradient id="pink"><stop stop-color="#ff4d94" stop-opacity=".65"/><stop offset="1" stop-color="#ff4d94" stop-opacity="0"/></radialGradient>
+    <radialGradient id="blue"><stop stop-color="#3fbcff" stop-opacity=".55"/><stop offset="1" stop-color="#3fbcff" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/><ellipse cx="300" cy="280" rx="340" ry="400" fill="url(#pink)"/><ellipse cx="890" cy="280" rx="360" ry="400" fill="url(#blue)"/>
+  <path d="M0 580h1200v180H0z" fill="#100f18"/><path d="M70 582h1060" stroke="#f65a9c" stroke-width="4"/>
+  <g stroke="#f9ca69" stroke-width="8"><path d="M270 0 478 370"/><path d="M950 0 765 340"/></g><g fill="#fff0b1"><circle cx="270" cy="24" r="20"/><circle cx="950" cy="24" r="20"/></g>
+  <g fill="#12111c"><circle cx="420" cy="286" r="50"/><path d="M370 342q50-34 100 0l38 192H330z"/><path d="m400 378-97 92m156-94 107-76" stroke="#12111c" stroke-width="20" stroke-linecap="round"/>
+    <circle cx="745" cy="273" r="48"/><path d="M697 326q48-34 96 0l38 208H660z"/><path d="m717 370-90 100m151-94 82 80" stroke="#12111c" stroke-width="20" stroke-linecap="round"/></g>
+  <g fill="#e5ac57"><path d="M431 410q52-68 106 0l-15 37q-40-25-78 0z"/><path d="M730 382q52-68 104 0l-15 37q-38-25-76 0z"/></g>
+  <g fill="#1c1a28" stroke="#dcae71" stroke-width="6"><ellipse cx="595" cy="468" rx="77" ry="58"/><ellipse cx="595" cy="468" rx="39" ry="25"/><path d="M520 468v93m150-93v93"/><path d="M526 560h137"/></g>
+  <g fill="#171521"><path d="M0 644q44-90 89 0v116H0zm112 18q38-96 78 0v98h-78zm850-10q42-98 83 0v108h-83zm122-8q58-108 116 0v116h-116z"/></g>
+  <g stroke="#f7d262" stroke-width="7" stroke-linecap="round"><path d="m92 615-30-60m30 60 31-72M205 635l-25-64m25 64 32-75m742 50-33-74m33 74 31-64m84 76-22-65m22 65 35-72"/></g>
+  <path d="M320 600h560" stroke="#f14e9a" stroke-width="4" opacity=".7"/>
+</svg>

@@ -72,6 +72,12 @@ function formatTime(date, originalTime) {
   return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(parsed);
 }
 
+function categoriesForEvent(event) {
+  const categories = Array.isArray(event.categories) ? [...event.categories] : [];
+  if (event.category) categories.push(event.category);
+  return [...new Set(categories.filter((category) => typeof category === 'string'))];
+}
+
 function safeImageUrl(value) {
   if (!value) return '';
   try {
@@ -84,7 +90,7 @@ function safeImageUrl(value) {
 
 function eventMatchesSearch(event, query) {
   if (!query) return true;
-  const searchable = [event.title, event.organizer, event.category, event.venue, event.date, event.time]
+  const searchable = [event.title, event.organizer, ...categoriesForEvent(event), event.venue, event.date, event.time]
     .filter(Boolean).join(' ').toLocaleLowerCase();
   return searchable.includes(query);
 }
@@ -100,7 +106,7 @@ function renderEvents() {
 
   const query = searchInput.value.trim().toLocaleLowerCase();
   const visibleEvents = events.filter((event) => (
-    (activeCategory === 'All' || event.category === activeCategory)
+    (activeCategory === 'All' || categoriesForEvent(event).includes(activeCategory))
       && eventMatchesSearch(event, query)
   ));
   if (activeSort !== 'default') {

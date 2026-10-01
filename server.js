@@ -49,15 +49,42 @@ let events = [
   },
   {
     id: 'evt-007', title: 'Anime Cosplay', organizer: 'Campus Anime Club', category: 'Anime',
+    categories: ['Anime'],
     date: '2026-10-24', time: '16:00', venue: 'Student Activity Center', link: '', image: '/ani1.jpg'
   },
   {
     id: 'evt-008', title: 'Anime Quiz', organizer: 'Campus Anime Club', category: 'Quiz',
+    categories: ['Anime', 'Quiz'],
     date: '2026-10-25', time: '14:00', venue: 'Student Activity Center', link: '', image: '/ani2.jpg'
   },
   {
     id: 'evt-009', title: 'K-Drama Quiz', organizer: 'Campus Screen Society', category: 'Quiz',
+    categories: ['K-Drama', 'Quiz'],
     date: '2026-10-26', time: '17:00', venue: 'Student Activity Center', link: '', image: '/kd.jpg'
+  },
+  {
+    id: 'evt-010', title: 'Campus Gaming Showdown', organizer: 'Campus Gaming Club', category: 'Gaming',
+    categories: ['Gaming'], date: '2026-11-07', time: '14:00', venue: 'Esports Lounge', link: '', image: '/cg.webp'
+  },
+  {
+    id: 'evt-011', title: 'BGMI Tournament', organizer: 'Campus Gaming Club', category: 'Gaming',
+    categories: ['Gaming'], date: '2026-11-14', time: '15:30', venue: 'Student Activity Center', link: '', image: '/bgmi.jpg'
+  },
+  {
+    id: 'evt-012', title: 'Cultural Fest', organizer: 'Cultural Committee', category: 'Cultural',
+    categories: ['Cultural'], date: '2026-11-20', time: '18:00', venue: 'Central Quad', link: '', image: '/cf.webp'
+  },
+  {
+    id: 'evt-013', title: 'Traditional Arts Showcase', organizer: 'Indian Heritage Society', category: 'Cultural',
+    categories: ['Cultural'], date: '2026-11-21', time: '16:00', venue: 'Open Air Theatre', link: '', image: '/td.webp'
+  },
+  {
+    id: 'evt-014', title: 'Battle of Bands', organizer: 'Campus Music Society', category: 'Music',
+    categories: ['Music'], date: '2026-11-28', time: '19:00', venue: 'Main Auditorium', link: '', image: '/assets/battle-of-bands.svg'
+  },
+  {
+    id: 'evt-015', title: 'Open Mic Night', organizer: 'Campus Music Society', category: 'Music',
+    categories: ['Music'], date: '2026-12-04', time: '18:30', venue: 'Student Cafe Stage', link: '', image: '/assets/open-mic-night.svg'
   }
 ];
 
@@ -138,10 +165,18 @@ function passwordInputIsValid(value) {
 
 function normalizeEvent(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return null;
+  const category = typeof body.category === 'string' ? body.category : '';
+  const submittedCategories = body.categories === undefined ? [category] : body.categories;
+  if (!Array.isArray(submittedCategories)
+      || submittedCategories.length === 0
+      || !submittedCategories.every((item) => typeof item === 'string' && EVENT_CATEGORIES.includes(item))) return null;
+  const categories = [...new Set(submittedCategories)];
+  if (!EVENT_CATEGORIES.includes(category) || !categories.includes(category)) return null;
   const event = {
     title: typeof body.title === 'string' ? body.title.trim() : '',
     organizer: typeof body.organizer === 'string' ? body.organizer.trim() : '',
-    category: typeof body.category === 'string' ? body.category : '',
+    category,
+    categories,
     date: typeof body.date === 'string' ? body.date : '',
     time: typeof body.time === 'string' ? body.time.trim() : '',
     venue: typeof body.venue === 'string' ? body.venue.trim() : '',
@@ -184,7 +219,7 @@ app.use(express.json({ limit: '32kb', strict: true }));
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-for (const imageName of ['ani1.jpg', 'ani2.jpg', 'kd.jpg']) {
+for (const imageName of ['ani1.jpg', 'ani2.jpg', 'kd.jpg', 'cg.webp', 'bgmi.jpg', 'cf.webp', 'td.webp']) {
   app.get(`/${imageName}`, (req, res, next) => {
     res.sendFile(path.join(__dirname, imageName), (error) => {
       if (error) next(error);

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-label="Intimate campus open mic with a singer at a microphone and a small audience">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#171522"/><stop offset=".55" stop-color="#382534"/><stop offset="1" stop-color="#17131b"/></linearGradient>
+    <radialGradient id="spot"><stop stop-color="#ffd58c" stop-opacity=".74"/><stop offset="1" stop-color="#ffbe78" stop-opacity="0"/></radialGradient>
+    <linearGradient id="curtain" x2="1"><stop stop-color="#5c2848"/><stop offset=".5" stop-color="#261925"/><stop offset="1" stop-color="#65304b"/></linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/><path d="M0 0h240l-75 490H0zm1200 0H960l75 490h165z" fill="url(#curtain)"/>
+  <ellipse cx="605" cy="346" rx="330" ry="410" fill="url(#spot)"/>
+  <path d="M0 595h1200v165H0z" fill="#121119"/><path d="M150 595h900" stroke="#d99861" stroke-width="4"/>
+  <path d="M615 172v300" stroke="#241e27" stroke-width="13"/><ellipse cx="615" cy="165" rx="28" ry="40" fill="#24202a" stroke="#d2a36e" stroke-width="6"/>
+  <g fill="#17141d"><circle cx="610" cy="318" r="52"/><path d="M560 373q50-37 100 0l48 190H512z"/><path d="m579 398-91 75m152-77 66 33" stroke="#17141d" stroke-width="22" stroke-linecap="round"/></g>
+  <path d="M495 570h235" stroke="#e8b777" stroke-width="6"/><path d="M512 586h202" stroke="#cf8c68" stroke-width="4"/>
+  <g fill="#0d0c12"><circle cx="132" cy="578" r="39"/><path d="M78 623q54-55 108 0l31 137H47z"/><circle cx="300" cy="600" r="35"/><path d="M250 640q50-50 100 0l25 120H225z"/><circle cx="895" cy="598" r="36"/><path d="M845 638q50-50 100 0l28 122H817z"/><circle cx="1070" cy="575" r="42"/><path d="M1012 622q58-55 116 0l36 138h-188z"/></g>
+  <g fill="#f1bb75"><circle cx="100" cy="110" r="5"/><circle cx="180" cy="155" r="4"/><circle cx="1050" cy="130" r="5"/><circle cx="990" cy="205" r="4"/></g>
+  <path d="M408 90h384" stroke="#9a604d" stroke-width="3" opacity=".75"/>
+</svg>

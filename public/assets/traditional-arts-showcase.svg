@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-label="Indian traditional arts showcase with an ornate stage, folk dancers, and colorful decorations">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#1b253c"/><stop offset=".55" stop-color="#73334b"/><stop offset="1" stop-color="#241729"/></linearGradient>
+    <linearGradient id="arch" x2="1"><stop stop-color="#d9854e"/><stop offset=".5" stop-color="#ffd27a"/><stop offset="1" stop-color="#d34d61"/></linearGradient>
+    <radialGradient id="light"><stop stop-color="#ffe38e" stop-opacity=".75"/><stop offset="1" stop-color="#ffe38e" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/><ellipse cx="600" cy="345" rx="500" ry="370" fill="url(#light)"/>
+  <path d="M150 620V306a450 450 0 0 1 900 0v314" fill="none" stroke="url(#arch)" stroke-width="30"/>
+  <path d="M207 620V312a393 393 0 0 1 786 0v308" fill="none" stroke="#f4cd82" stroke-width="6" stroke-dasharray="5 17"/>
+  <g fill="#ffcf67"><circle cx="206" cy="307" r="14"/><circle cx="282" cy="195" r="12"/><circle cx="388" cy="112" r="12"/><circle cx="515" cy="65" r="12"/><circle cx="685" cy="65" r="12"/><circle cx="812" cy="112" r="12"/><circle cx="918" cy="195" r="12"/><circle cx="994" cy="307" r="14"/></g>
+  <path d="M0 617h1200v143H0z" fill="#171421"/><path d="M90 618h1020" stroke="#efbd65" stroke-width="5"/>
+  <g fill="#171421"><circle cx="420" cy="368" r="45"/><path d="M375 420q45-34 90 0l44 154-90 55-90-55z"/><path d="m378 451-91-45m175 46 80-74M400 611l-55 56m93-56 71 48" stroke="#171421" stroke-width="22" stroke-linecap="round"/>
+    <circle cx="752" cy="370" r="45"/><path d="M707 420q45-34 90 0l44 154-90 55-90-55z"/><path d="m710 451-84-74m175 75 91-46M732 611l-70 48m93-48 55 56" stroke="#171421" stroke-width="22" stroke-linecap="round"/></g>
+  <g fill="#df5d5b"><path d="m374 443 93 0 39 130-92 56-92-56z"/><path d="m706 443 93 0 52 130-90 56-90-56z"/></g>
+  <g fill="#ffd16d"><path d="M350 490h140m-140 28h150m-125 28h115M692 490h140m-140 28h150m-125 28h115" stroke="#ffd16d" stroke-width="6"/></g>
+  <path d="M245 654h710" stroke="#d88756" stroke-width="4"/><path d="M520 640q80-72 160 0-80 85-160 0z" fill="none" stroke="#ffcf67" stroke-width="6"/>
+</svg>
