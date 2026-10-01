@@ -1,5 +1,7 @@
 const API_URL = '/events';
 const eventList = document.querySelector('#event-list');
+const registrationList = document.querySelector('#registration-list');
+const registrationCount = document.querySelector('#registration-count');
 const eventForm = document.querySelector('#event-form');
 const filterButtons = document.querySelectorAll('.filter-button');
 const searchInput = document.querySelector('#event-search');
@@ -9,7 +11,6 @@ const eventDialog = document.querySelector('#event-dialog');
 const dialogImage = document.querySelector('#dialog-image');
 const dialogCategory = document.querySelector('#dialog-category');
 const dialogRegister = document.querySelector('#dialog-register');
-const dialogRegisterUnavailable = document.querySelector('#dialog-register-unavailable');
 const formStatus = document.querySelector('#form-status');
 document.querySelector('#logout-button').addEventListener('click', async () => {
   try {
@@ -34,9 +35,11 @@ fetch('/me')
   });
 
 let events = [];
+let myRegistrations = [];
 let activeCategory = 'All';
 let activeSort = 'default';
 let eventsLoaded = false;
+let registrationsLoaded = false;
 
 function escapeHtml(value = '') {
   return String(value).replace(/[&<>"']/g, (character) => ({
@@ -67,16 +70,6 @@ function formatTime(date, originalTime) {
   const parsed = parseEventDate(date, originalTime);
   if (!parsed) return String(originalTime);
   return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(parsed);
-}
-
-function safeRegistrationLink(value) {
-  if (!value || String(value).trim().startsWith('#')) return '';
-  try {
-    const url = new URL(value, window.location.origin);
-    return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
-  } catch {
-    return '';
-  }
 }
 
 function safeImageUrl(value) {
@@ -131,7 +124,6 @@ function renderEvents() {
   }
 
   eventList.innerHTML = visibleEvents.map((event, index) => {
-    const registrationLink = safeRegistrationLink(event.link ?? event.registrationLink);
     const imageUrl = safeImageUrl(event.image);
     const title = escapeHtml(event.title);
     const organizer = escapeHtml(event.organizer);
@@ -161,9 +153,9 @@ function renderEvents() {
           <div class="event-meta"><span class="venue-mark" aria-hidden="true">⌖</span><span>${venue}</span></div>
           <div class="event-card-actions">
             <button class="details-button" type="button" data-details-id="${eventId}">Details <span aria-hidden="true">↗</span></button>
-            ${registrationLink
-              ? `<a class="register-button" href="${escapeHtml(registrationLink)}" target="_blank" rel="noopener noreferrer"><span>Register</span><span aria-hidden="true">↗</span></a>`
-              : '<span class="register-button" aria-disabled="true">Register <span class="register-note">(coming soon)</span></span>'}
+            <button class="register-button" type="button" data-register-id="${eventId}" ${event.registered ? 'disabled' : ''}>
+              <span>${event.registered ? 'Registered' : 'Register'}</span>${event.registered ? '' : '<span aria-hidden="true">&#8599;</span>'}
+            </button>
             <button class="delete-button" type="button" data-delete-id="${eventId}" aria-label="Delete ${title}">Remove</button>
           </div>
         </div>
@@ -183,6 +175,59 @@ async function loadEvents() {
   } catch (error) {
     eventCount.textContent = 'CONNECTION INTERRUPTED';
     eventList.innerHTML = `<div class="load-error" role="alert">Events couldn’t load: ${escapeHtml(error.message)}. Please try again shortly.</div>`;
+  }
+}
+
+function renderMyRegistrations() {
+  if (!registrationsLoaded) return;
+  registrationCount.textContent = `${String(myRegistrations.length).padStart(2, '0')} REGISTERED`;
+
+  if (!myRegistrations.length) {
+    registrationList.innerHTML = '<div class="registration-empty"><p>You haven\'t registered for any events yet.</p><a class="register-button" href="#events">Browse events <span aria-hidden="true">&#8599;</span></a></div>';
+    return;
+  }
+
+  registrationList.innerHTML = myRegistrations.map((event) => {
+    const title = escapeHtml(event.title || 'Untitled event');
+    const imageUrl = safeImageUrl(event.image);
+    const date = parseEventDate(event.date, event.time);
+    const dateText = date
+      ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
+      : escapeHtml(event.date || 'Date to be announced');
+    const timeText = escapeHtml(formatTime(event.date, event.time) || event.time || 'Time to be announced');
+    const category = escapeHtml(event.category || 'Event');
+    const venue = escapeHtml(event.venue || 'Venue to be announced');
+    return `
+      <article class="registration-card">
+        ${imageUrl
+          ? `<img class="registration-image" src="${escapeHtml(imageUrl)}" alt="${title} event" loading="lazy">`
+          : '<div class="registration-image registration-image-placeholder" aria-hidden="true"></div>'}
+        <div class="registration-card-content">
+          <div class="registration-card-labels"><span class="registration-category">${category}</span><span class="registration-status">Registered</span></div>
+          <h3>${title}</h3>
+          <p class="registration-when">${dateText} <span aria-hidden="true">·</span> ${timeText}</p>
+          <p class="registration-venue"><span aria-hidden="true">⌖</span> ${venue}</p>
+        </div>
+      </article>`;
+  }).join('');
+}
+
+async function loadMyRegistrations() {
+  try {
+    const response = await fetch('/my-registrations');
+    if (response.status === 401) {
+      location.replace('/login.html');
+      return;
+    }
+    if (!response.ok) throw new Error(`Could not load registrations (${response.status})`);
+    const result = await response.json();
+    if (!Array.isArray(result)) throw new Error('The registrations response was not a list');
+    myRegistrations = result;
+    registrationsLoaded = true;
+    renderMyRegistrations();
+  } catch (error) {
+    registrationCount.textContent = 'REGISTRATIONS UNAVAILABLE';
+    registrationList.innerHTML = `<div class="load-error" role="alert">Registrations couldn’t load: ${escapeHtml(error.message)}.</div>`;
   }
 }
 
@@ -222,16 +267,61 @@ function openEventDetails(eventId) {
   dialogImage.alt = selectedEvent.title ? `${selectedEvent.title} event` : 'Event image';
   dialogImage.parentElement.hidden = !imageUrl;
   eventDialog.classList.toggle('no-image', !imageUrl);
-  const registrationLink = safeRegistrationLink(selectedEvent.link ?? selectedEvent.registrationLink);
-  dialogRegister.hidden = !registrationLink;
-  dialogRegisterUnavailable.hidden = Boolean(registrationLink);
-  if (registrationLink) dialogRegister.href = registrationLink;
+  dialogRegister.dataset.registerId = String(selectedEvent.id);
+  dialogRegister.disabled = Boolean(selectedEvent.registered);
+  dialogRegister.innerHTML = selectedEvent.registered ? 'Registered' : 'Register <span aria-hidden="true">&#8599;</span>';
   eventDialog.showModal();
+}
+
+async function registerForEvent(eventId, button) {
+  if (!eventId || button.disabled) return;
+  button.disabled = true;
+  try {
+    const response = await fetch(`/events/${encodeURIComponent(eventId)}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      location.replace('/login.html');
+      return;
+    }
+    if (response.status === 409 && result.registered) {
+      const registeredEvent = events.find((item) => String(item.id) === String(eventId));
+      if (registeredEvent) {
+        registeredEvent.registered = true;
+        renderEvents();
+        if (eventDialog.open) {
+          dialogRegister.disabled = true;
+          dialogRegister.textContent = 'Registered';
+        }
+      }
+      await loadMyRegistrations();
+      return;
+    }
+    if (!response.ok) throw new Error(result.error || `Could not register (${response.status})`);
+
+    const registeredEvent = events.find((item) => String(item.id) === String(eventId));
+    if (registeredEvent) registeredEvent.registered = true;
+    renderEvents();
+    if (eventDialog.open) {
+      dialogRegister.disabled = true;
+      dialogRegister.textContent = 'Registered';
+    }
+    await loadMyRegistrations();
+  } catch (error) {
+    button.disabled = false;
+    window.alert(error.message);
+  }
 }
 
 document.querySelector('.dialog-close').addEventListener('click', () => eventDialog.close());
 eventDialog.addEventListener('click', (event) => {
   if (event.target === eventDialog) eventDialog.close();
+});
+dialogRegister.addEventListener('click', () => {
+  registerForEvent(dialogRegister.dataset.registerId, dialogRegister);
 });
 document.addEventListener('keydown', (event) => {
   if (event.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
@@ -295,6 +385,11 @@ eventList.addEventListener('click', async (event) => {
     openEventDetails(detailsButton.dataset.detailsId);
     return;
   }
+  const registerButton = event.target.closest('[data-register-id]');
+  if (registerButton) {
+    await registerForEvent(registerButton.dataset.registerId, registerButton);
+    return;
+  }
   const deleteButton = event.target.closest('[data-delete-id]');
   if (!deleteButton) return;
 
@@ -308,6 +403,7 @@ eventList.addEventListener('click', async (event) => {
     }
     events = events.filter((item) => String(item.id) !== eventId);
     renderEvents();
+    await loadMyRegistrations();
   } catch (error) {
     deleteButton.disabled = false;
     window.alert(error.message);
@@ -315,3 +411,4 @@ eventList.addEventListener('click', async (event) => {
 });
 
 loadEvents();
+loadMyRegistrations();

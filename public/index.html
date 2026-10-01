@@ -17,7 +17,7 @@
   <header class="site-header">
     <a class="brand" href="#top" aria-label="CampusPulse home"><span class="brand-mark" aria-hidden="true">C<span>·</span></span><span>campus<span class="brand-light">pulse</span></span></a>
     <nav class="header-nav" aria-label="Main navigation">
-      <a href="#events">Discover</a><a href="#event-list">Events</a><a href="#clubs">Clubs</a>
+      <a href="#events">Discover</a><a href="#event-list">Events</a><a href="#clubs">Clubs</a><a href="#my-registrations">My Registrations</a>
     </nav>
     <div class="header-actions"><span id="user-name" class="user-greeting"></span><button id="logout-button" class="logout-button" type="button">Log out</button><a class="nav-cta" href="#add-event">Add Event <span aria-hidden="true">↗</span></a></div>
   </header>
@@ -42,10 +42,22 @@
       </div>
       <div class="discovery-tools">
         <nav class="filter-bar" aria-label="Filter events by category">
-          <button class="filter-button is-active" type="button" data-category="All" aria-pressed="true">Everything</button>
-          <button class="filter-button" type="button" data-category="Workshop" aria-pressed="false">Workshops</button>
-          <button class="filter-button" type="button" data-category="Fest" aria-pressed="false">Festivals</button>
-          <button class="filter-button" type="button" data-category="Competition" aria-pressed="false">Competitions</button>
+          <button class="filter-button is-active" type="button" data-category="All" aria-pressed="true">All Events</button>
+          <button class="filter-button" type="button" data-category="Fest" aria-pressed="false">Fest</button>
+          <button class="filter-button" type="button" data-category="Workshop" aria-pressed="false">Workshop</button>
+          <button class="filter-button" type="button" data-category="Music" aria-pressed="false">Music</button>
+          <button class="filter-button" type="button" data-category="Dance" aria-pressed="false">Dance</button>
+          <button class="filter-button" type="button" data-category="Anime" aria-pressed="false">Anime</button>
+          <button class="filter-button" type="button" data-category="K-Drama" aria-pressed="false">K-Drama</button>
+          <button class="filter-button" type="button" data-category="Gaming" aria-pressed="false">Gaming</button>
+          <button class="filter-button" type="button" data-category="Technology" aria-pressed="false">Technology</button>
+          <button class="filter-button" type="button" data-category="Quiz" aria-pressed="false">Quiz</button>
+          <button class="filter-button" type="button" data-category="Art &amp; Design" aria-pressed="false">Art &amp; Design</button>
+          <button class="filter-button" type="button" data-category="Academic" aria-pressed="false">Academic</button>
+          <button class="filter-button" type="button" data-category="Sports" aria-pressed="false">Sports</button>
+          <button class="filter-button" type="button" data-category="Cultural" aria-pressed="false">Cultural</button>
+          <button class="filter-button" type="button" data-category="Other" aria-pressed="false">Other</button>
+          <button class="filter-button" type="button" data-category="Competition" aria-pressed="false">Competition</button>
         </nav>
         <label class="sort-box"><span>Order</span><select id="event-sort" aria-label="Sort events"><option value="default">As listed</option><option value="upcoming">Upcoming first</option><option value="recent">Recent first</option></select></label>
         <label class="search-box"><span class="search-icon" aria-hidden="true">⌕</span><span class="visually-hidden">Search events</span><input id="event-search" type="search" placeholder="Find your thing" autocomplete="off"><kbd>/</kbd></label>
@@ -53,10 +65,19 @@
       <div id="clubs" class="club-directory-anchor"><div id="event-list" class="event-list" aria-live="polite" aria-label="Campus events"></div></div>
     </section>
 
+    <section class="registrations-section" id="my-registrations" aria-labelledby="my-registrations-title">
+      <div class="section-kicker"><span>YOUR CAMPUS LIST</span><span class="section-rule"></span><span id="registration-count" aria-live="polite">MY REGISTRATIONS</span></div>
+      <div class="section-heading">
+        <div><p class="eyebrow">SAVED SEATS</p><h2 id="my-registrations-title">My <em>registrations.</em></h2></div>
+        <a class="registration-browse-link" href="#events">Browse events <span aria-hidden="true">&#8599;</span></a>
+      </div>
+      <div id="registration-list" class="registration-list" aria-live="polite" aria-label="Your registered events"></div>
+    </section>
+
     <dialog class="event-dialog" id="event-dialog" aria-labelledby="dialog-title">
       <button class="dialog-close" type="button" aria-label="Close event details">×</button>
       <div class="dialog-image-wrap"><img id="dialog-image" alt="" src=""><span id="dialog-category" class="category-badge"></span></div>
-      <div class="dialog-content"><p class="eyebrow"><span class="eyebrow-line"></span> EVENT DETAILS</p><h2 id="dialog-title"></h2><p id="dialog-organizer" class="event-organizer"></p><div class="dialog-facts"><p><span>WHEN</span><time id="dialog-date"></time></p><p><span>WHERE</span><strong id="dialog-venue"></strong></p></div><a id="dialog-register" class="register-button" target="_blank" rel="noopener noreferrer">Register <span aria-hidden="true">↗</span></a><span id="dialog-register-unavailable" class="dialog-unavailable" hidden>Registration details coming soon</span></div>
+      <div class="dialog-content"><p class="eyebrow"><span class="eyebrow-line"></span> EVENT DETAILS</p><h2 id="dialog-title"></h2><p id="dialog-organizer" class="event-organizer"></p><div class="dialog-facts"><p><span>WHEN</span><time id="dialog-date"></time></p><p><span>WHERE</span><strong id="dialog-venue"></strong></p></div><button id="dialog-register" class="register-button" type="button">Register <span aria-hidden="true">&#8599;</span></button></div>
     </dialog>
 
     <section class="add-section" id="add-event" aria-labelledby="add-event-title">
@@ -65,7 +86,7 @@
         <div class="form-heading"><span>01 / EVENT DETAILS</span><span>Fields marked * are required</span></div>
         <div class="form-field form-field-wide"><label for="event-title">Event title <b>*</b></label><input id="event-title" name="title" type="text" placeholder="e.g. Creative Coding Workshop" required></div>
         <div class="form-field"><label for="event-organizer">Organizer <b>*</b></label><input id="event-organizer" name="organizer" type="text" placeholder="Club or group name" required></div>
-        <div class="form-field"><label for="event-category">Category <b>*</b></label><select id="event-category" name="category" required><option value="" disabled selected>Choose a category</option><option value="Workshop">Workshop</option><option value="Fest">Fest</option><option value="Competition">Competition</option></select></div>
+        <div class="form-field"><label for="event-category">Category <b>*</b></label><select id="event-category" name="category" required><option value="" disabled selected>Choose a category</option><option value="Fest">Fest</option><option value="Workshop">Workshop</option><option value="Music">Music</option><option value="Dance">Dance</option><option value="Anime">Anime</option><option value="K-Drama">K-Drama</option><option value="Gaming">Gaming</option><option value="Technology">Technology</option><option value="Quiz">Quiz</option><option value="Art &amp; Design">Art &amp; Design</option><option value="Academic">Academic</option><option value="Sports">Sports</option><option value="Cultural">Cultural</option><option value="Other">Other</option><option value="Competition">Competition</option></select></div>
         <div class="form-field"><label for="event-date">Date <b>*</b></label><input id="event-date" name="date" type="date" required></div>
         <div class="form-field"><label for="event-time">Time <b>*</b></label><input id="event-time" name="time" type="time" required></div>
         <div class="form-field form-field-wide"><label for="event-venue">Venue <b>*</b></label><input id="event-venue" name="venue" type="text" placeholder="Building, room, or online" required></div>
