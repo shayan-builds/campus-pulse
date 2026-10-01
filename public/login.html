@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080f19">
+  <title>Sign in · CampusPulse</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-shell { width: min(440px, calc(100% - 32px)); margin: 8vh auto; }
+    .auth-card { margin-top: 28px; padding: clamp(24px, 6vw, 40px); border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+    .auth-card h1 { margin: 0; font-size: 34px; line-height: 1.15; }
+    .auth-copy { margin: 10px 0 25px; color: var(--muted); font-size: 14px; }
+    .auth-tabs { display: flex; gap: 8px; margin-bottom: 22px; }
+    .auth-tab { flex: 1; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+    .auth-tab[aria-selected="true"] { border-color: var(--teal); background: var(--teal-dark); color: var(--teal); }
+    .auth-form { display: grid; gap: 16px; }
+    .auth-form[hidden] { display: none; }
+    .auth-error { min-height: 20px; margin: 0; color: #ff929a; font-size: 12px; }
+    .auth-error.is-success { color: var(--teal); }
+    .auth-card .submit-button { width: 100%; }
+    @media (max-width: 560px) { .auth-shell { margin-top: 28px; } }
+  </style>
+</head>
+<body>
+  <main class="auth-shell">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">CP</span><span>CampusPulse</span></a>
+    <section class="auth-card" aria-labelledby="auth-title">
+      <p class="eyebrow">YOUR CAMPUS, IN THE LOOP</p>
+      <h1 id="auth-title">Welcome back.</h1>
+      <p class="auth-copy">Sign in to find your next campus moment.</p>
+      <div class="auth-tabs" role="tablist" aria-label="Account access">
+        <button class="auth-tab" id="login-tab" type="button" role="tab" aria-selected="true">Log in</button>
+        <button class="auth-tab" id="signup-tab" type="button" role="tab" aria-selected="false">Sign up</button>
+      </div>
+      <form id="login-form" class="auth-form">
+        <div class="form-field"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="form-field"><label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+        <p class="auth-error" aria-live="polite"></p>
+        <button class="submit-button" type="submit">Log in</button>
+      </form>
+      <form id="signup-form" class="auth-form" hidden>
+        <div class="form-field"><label for="signup-name">Name</label><input id="signup-name" name="name" type="text" autocomplete="name" required></div>
+        <div class="form-field"><label for="signup-email">Email</label><input id="signup-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="form-field"><label for="signup-password">Password</label><input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" required></div>
+        <p class="auth-error" aria-live="polite"></p>
+        <button class="submit-button" type="submit">Create account</button>
+      </form>
+    </section>
+  </main>
+  <script>
+    const loginTab = document.querySelector('#login-tab');
+    const signupTab = document.querySelector('#signup-tab');
+    const loginForm = document.querySelector('#login-form');
+    const signupForm = document.querySelector('#signup-form');
+    function showForm(isSignup) {
+      loginForm.hidden = isSignup;
+      signupForm.hidden = !isSignup;
+      loginTab.setAttribute('aria-selected', String(!isSignup));
+      signupTab.setAttribute('aria-selected', String(isSignup));
+      document.querySelector('#auth-title').textContent = isSignup ? 'Join CampusPulse.' : 'Welcome back.';
+      document.querySelector('.auth-copy').textContent = isSignup ? 'Create an account to explore campus events.' : 'Sign in to find your next campus moment.';
+    }
+    loginTab.addEventListener('click', () => showForm(false));
+    signupTab.addEventListener('click', () => showForm(true));
+    async function submitAuth(form, endpoint) {
+      const error = form.querySelector('.auth-error');
+      const button = form.querySelector('[type="submit"]');
+      error.textContent = '';
+      error.classList.remove('is-success');
+      button.disabled = true;
+      try {
+        const payload = Object.fromEntries(new FormData(form));
+        const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const responseText = await response.text();
+        let result;
+        try {
+          result = JSON.parse(responseText);
+        } catch {
+          throw new Error('The auth server returned a non-JSON response. Open the app at http://localhost:3000/login.html and make sure the updated server.js is running.');
+        }
+        if (endpoint === '/signup') {
+          if (response.status !== 201 || !result.user) {
+            throw new Error(result.error || 'Could not create your account. Please try again.');
+          }
+          showForm(false);
+          document.querySelector('#login-email').value = payload.email;
+          const loginMessage = loginForm.querySelector('.auth-error');
+          loginMessage.textContent = 'Account created. Please log in with your new credentials.';
+          loginMessage.classList.add('is-success');
+          document.querySelector('#login-password').focus();
+          return;
+        }
+        if (response.status !== 200 || !result.user) {
+          throw new Error(result.error || 'The server did not confirm a successful login. Check your email and password and try again.');
+        }
+        location.replace('/');
+      } catch (err) {
+        error.textContent = err.message;
+      } finally {
+        button.disabled = false;
+      }
+    }
+    loginForm.addEventListener('submit', async (event) => { event.preventDefault(); await submitAuth(loginForm, '/login'); });
+    signupForm.addEventListener('submit', async (event) => { event.preventDefault(); await submitAuth(signupForm, '/signup'); });
+  </script>
+</body>
+</html>

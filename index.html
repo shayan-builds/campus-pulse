@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11100f">
+  <meta name="description" content="Discover and share the workshops, festivals, and competitions bringing campus together.">
+  <title>CampusPulse — Find your next campus moment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#events">Skip to events</a>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="CampusPulse home"><span class="brand-mark" aria-hidden="true">C<span>·</span></span><span>campus<span class="brand-light">pulse</span></span></a>
+    <nav class="header-nav" aria-label="Main navigation">
+      <a href="#events">Discover</a><a href="#event-list">Events</a><a href="#clubs">Clubs</a>
+    </nav>
+    <div class="header-actions"><span id="user-name" class="user-greeting"></span><button id="logout-button" class="logout-button" type="button">Log out</button><a class="nav-cta" href="#add-event">Add Event <span aria-hidden="true">↗</span></a></div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-backdrop" aria-hidden="true"><img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4" alt=""><span class="hero-image-index">FIELD NOTES&nbsp; / &nbsp;01</span></div>
+      <div class="hero-content">
+        <p class="eyebrow"><span class="eyebrow-line"></span> YOUR CAMPUS, RIGHT NOW</p>
+        <h1 id="page-title">CAMPUS,<br><em>IN MOTION.</em></h1>
+        <p class="hero-copy">Discover what's happening around you.</p>
+        <a class="hero-cta" href="#events"><span>Explore events</span><span class="cta-arrow" aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-foot"><span>MEET YOUR NEXT MOMENT</span><span>DISCOVER &nbsp; / &nbsp; CONNECT &nbsp; / &nbsp; GO</span></div>
+    </section>
+
+    <section class="events-section" id="events" aria-labelledby="events-title">
+      <div class="section-kicker"><span>THE CAMPUS JOURNAL</span><span class="section-rule"></span><span id="event-count" aria-live="polite">UPCOMING MOMENTS</span></div>
+      <div class="section-heading">
+        <div><p class="eyebrow">GATHER HERE</p><h2 id="events-title">On the <em>calendar.</em></h2></div>
+        <p class="section-aside">Good things happen when you show up.<br>Here’s what’s coming up.</p>
+      </div>
+      <div class="discovery-tools">
+        <nav class="filter-bar" aria-label="Filter events by category">
+          <button class="filter-button is-active" type="button" data-category="All" aria-pressed="true">Everything</button>
+          <button class="filter-button" type="button" data-category="Workshop" aria-pressed="false">Workshops</button>
+          <button class="filter-button" type="button" data-category="Fest" aria-pressed="false">Festivals</button>
+          <button class="filter-button" type="button" data-category="Competition" aria-pressed="false">Competitions</button>
+        </nav>
+        <label class="sort-box"><span>Order</span><select id="event-sort" aria-label="Sort events"><option value="default">As listed</option><option value="upcoming">Upcoming first</option><option value="recent">Recent first</option></select></label>
+        <label class="search-box"><span class="search-icon" aria-hidden="true">⌕</span><span class="visually-hidden">Search events</span><input id="event-search" type="search" placeholder="Find your thing" autocomplete="off"><kbd>/</kbd></label>
+      </div>
+      <div id="clubs" class="club-directory-anchor"><div id="event-list" class="event-list" aria-live="polite" aria-label="Campus events"></div></div>
+    </section>
+
+    <dialog class="event-dialog" id="event-dialog" aria-labelledby="dialog-title">
+      <button class="dialog-close" type="button" aria-label="Close event details">×</button>
+      <div class="dialog-image-wrap"><img id="dialog-image" alt="" src=""><span id="dialog-category" class="category-badge"></span></div>
+      <div class="dialog-content"><p class="eyebrow"><span class="eyebrow-line"></span> EVENT DETAILS</p><h2 id="dialog-title"></h2><p id="dialog-organizer" class="event-organizer"></p><div class="dialog-facts"><p><span>WHEN</span><time id="dialog-date"></time></p><p><span>WHERE</span><strong id="dialog-venue"></strong></p></div><a id="dialog-register" class="register-button" target="_blank" rel="noopener noreferrer">Register <span aria-hidden="true">↗</span></a><span id="dialog-register-unavailable" class="dialog-unavailable" hidden>Registration details coming soon</span></div>
+    </dialog>
+
+    <section class="add-section" id="add-event" aria-labelledby="add-event-title">
+      <div class="add-intro"><p class="eyebrow"><span class="eyebrow-line"></span> MAKE THE INVITE</p><h2 id="add-event-title">Got an event?<br><em>Make it a moment.</em></h2><p>Bring your people together. Share the details and put your event on the campus calendar.</p><a class="add-cta-link" href="#event-form">Create your event <span aria-hidden="true">↓</span></a><div class="add-note"><span>余白</span><span>Good things start with an invitation.</span></div></div>
+      <form id="event-form" class="event-form">
+        <div class="form-heading"><span>01 / EVENT DETAILS</span><span>Fields marked * are required</span></div>
+        <div class="form-field form-field-wide"><label for="event-title">Event title <b>*</b></label><input id="event-title" name="title" type="text" placeholder="e.g. Creative Coding Workshop" required></div>
+        <div class="form-field"><label for="event-organizer">Organizer <b>*</b></label><input id="event-organizer" name="organizer" type="text" placeholder="Club or group name" required></div>
+        <div class="form-field"><label for="event-category">Category <b>*</b></label><select id="event-category" name="category" required><option value="" disabled selected>Choose a category</option><option value="Workshop">Workshop</option><option value="Fest">Fest</option><option value="Competition">Competition</option></select></div>
+        <div class="form-field"><label for="event-date">Date <b>*</b></label><input id="event-date" name="date" type="date" required></div>
+        <div class="form-field"><label for="event-time">Time <b>*</b></label><input id="event-time" name="time" type="time" required></div>
+        <div class="form-field form-field-wide"><label for="event-venue">Venue <b>*</b></label><input id="event-venue" name="venue" type="text" placeholder="Building, room, or online" required></div>
+        <div class="form-field form-field-wide"><label for="event-link">Registration link <span>(optional)</span></label><input id="event-link" name="registrationLink" type="url" placeholder="https://"></div>
+        <div class="form-field form-field-wide"><label for="event-image">Image URL <span>(optional)</span></label><input id="event-image" name="image" type="url" placeholder="https://"></div>
+        <button class="submit-button" type="submit"><span>Share this event</span><span aria-hidden="true">↗</span></button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="closing-note" aria-label="About CampusPulse"><span class="closing-mark" aria-hidden="true">✳</span><p>There’s more to campus<br>than what’s on the syllabus.</p><span class="closing-aside">GO OUT THERE. FIND YOUR PEOPLE.</span></section>
+  </main>
+  <footer class="site-footer"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">C<span>·</span></span><span>campus<span class="brand-light">pulse</span></span></a><span>MADE FOR THE MOMENTS BETWEEN EVERYTHING ELSE.</span><a class="back-to-top" href="#top">Back to top ↑</a></footer>
+</body>
+</html>
